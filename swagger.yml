@@ -1,0 +1,673 @@
+swagger: '2.0'
+info:
+  description: >-
+    This API allows you to manage and deploy your cloud services from
+    [Virtua.cloud](Virtua.cloud) from a rest API.
+  version: 1.0.0
+  title: VirtuaCloud API
+  termsOfService: 'https://www.virtua.cloud/legal/terms-of-service'
+  contact:
+    email: support@virtua.cloud
+host: api.virtua.cloud
+basePath: /
+tags:
+  - name: Account
+    description: Account informations
+  - name: Cloud Server
+    description: Manage and create your Cloud servers
+schemes:
+  - https
+paths:
+  /account:
+    get:
+      tags:
+        - Account
+      summary: Display account informations
+      description: ''
+      operationId: getAcc
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Account'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+  /cloud/limits:
+    get:
+      tags:
+        - Account
+      summary: Display account resources usage and limits
+      description: ''
+      operationId: getLim
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Limits'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+  /cloud-server:
+    get:
+      tags:
+        - Account
+        - Cloud Server
+      summary: List all active Cloud Servers on your account
+      description: ''
+      operationId: getActvCloud
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServers'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+    post:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: body
+          name: "Create informations"
+          required: true
+          schema:
+            type: object
+            required:
+              - PROJECT_UUID
+              - OFFER_UUID
+              - SYSTEM_UUID
+              - ipv6_enabled
+            properties:
+              PROJECT_UUID:
+                type: string
+                description: Project UUID
+              OFFER_UUID:
+                type: string
+                description: Offer UUID
+              SYSTEM_UUID:
+                type: string
+                description: System UUID
+              ipv6_enabled:
+                type: boolean
+                description: 1 enable and addign a IPv6, 0 disable IPv6 and no IPv6 assignation
+              hostname:
+                type: string
+                description: A custom hostname
+      summary: Create a Cloud Server
+      description: ''
+      operationId: newCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+  /cloud-server/{UUID}:
+    get:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+      summary: Display a Cloud Server informations
+      description: ''
+      operationId: getCloudServInfo
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServer'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+    delete:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+      summary: Delete a Cloud Server
+      description: ''
+      operationId: destroyCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServerAct'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+        
+  /cloud-server/{UUID}/start:
+    post:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+      summary: Start a Cloud Server
+      description: ''
+      operationId: startCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServerAct'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+
+  /cloud-server/{UUID}/stop:
+    post:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+      summary: Stop a Cloud Server
+      description: ''
+      operationId: stopCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServerAct'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+  /cloud-server/{UUID}/restart:
+    post:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+      summary: Restart a Cloud Server
+      description: ''
+      operationId: restartCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServerAct'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+  /cloud-server/{UUID}/resize:
+    post:
+      tags:
+        - Cloud Server
+      parameters:
+        - in: path
+          name: UUID
+          required: true
+          type: string
+        - in: body
+          name: "Resize informations"
+          required: true
+          schema:
+            type: object
+            required:
+              - NEW_OFFER_UUID
+              - resize_disk
+            properties:
+              NEW_OFFER_UUID:
+                type: string
+                description: The new offer UUID
+              resize_disk:
+                type: boolean
+                description: 1 upgrade the disk size, 0 keep the disk size unchanged
+      summary: Resize a Cloud Server
+      description: ''
+      operationId: resizeCloudServ
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CloudServerAct'
+        '403':
+          description: Denied
+      security:
+        - ApiKeyAuth: []
+        
+definitions:
+  Account:
+    properties:
+      balance:
+        type: string
+        example: 93.6425
+      currency:
+        type: string
+        example: EUR
+      monthly_cloud_usage:
+        type: string
+        example: 6.4590
+      monthly_cloud_usage_estimate:
+        type: string
+        example: 37.5633
+      timezone:
+        type: string
+        example: "Europe\\/Paris"
+      today_cloud_usage:
+        type: string
+        example: 1.0714
+      cloud_servers_limit:
+        type: string
+        example: 8
+  Limits:
+    properties:
+      success: 
+        type: boolean
+      usage: 
+        type: object
+        properties: 
+          cloud_servers: 
+            type: integer
+            format: int32
+            example: 5
+          vcpus: 
+            type: string
+            example: 10
+          memory_size: 
+            type: string
+            example: 18944
+          root_space: 
+            type: string
+            example: 120
+          ip_address_v4: 
+            type: string
+            example: 5
+          ip_address_v6: 
+            type: string
+            example: 3
+      limits: 
+        type: object
+        properties: 
+          cloud_servers: 
+            type: string
+            example: 8
+          smtp_enabled: 
+            type: string
+            example: 1
+  CloudServers:
+    properties:
+      success: 
+        type: boolean
+      cloud_servers: 
+        type: array
+        items: 
+          type: object
+          properties: 
+            uuid: 
+              type: string
+              example: 4768103d-7e0b-46c8-8f65-360bcd7b3322
+            name: 
+              type: string
+              example: vs4023.par01fr.vsys.cloud
+            label: 
+              type: string
+              format: nullable
+            offer: 
+              type: object
+              properties: 
+                uuid: 
+                  type: string
+                  example: vcs-2-win-ryzen
+                category: 
+                  type: string
+                  example: vcs-win
+                name: 
+                  type: string
+                  example: vCS-2-WIN
+                price_month: 
+                  type: string
+                  example: 12.00
+                price_hour: 
+                  type: string
+                  example: 0.0164
+            start_time: 
+              type: string
+              example: 2020-02-10 13:53:53
+            end_time: 
+              type: string
+              example: 2020-02-10 22:05:01
+            monthly_usage: 
+              type: string
+              example: 0.134243111111080000000000000000
+            short_description: 
+              type: string
+              format: nullable
+            is_suspended: 
+              type: string
+              example: 0
+            suspension_reason: 
+              type: string
+              format: nullable
+            cloud_zone: 
+              type: object
+              properties: 
+                country_code: 
+                  type: string
+                  example: FR
+                country_name: 
+                  type: string
+                  example: France
+                city_name: 
+                  type: string
+                  example: Paris
+                datacenter_name: 
+                  type: string
+                  example: Iliad DC2
+                timezone: 
+                  type: string
+                  example: Europe/Paris
+            vcpus: 
+              type: string
+              example: 2
+            vcpus_used: 
+              type: string
+              example: 1
+            memory_size: 
+              type: string
+              example: 4096
+            memory_size_used: 
+              type: string
+              example: 3597
+            root_space: 
+              type: string
+              example: 40
+            root_disk_type: 
+              type: string
+              example: nvme
+            status: 
+              type: string
+              example: running
+            is_error: 
+              type: string
+              example: 0
+            is_setup: 
+              type: string
+              example: 1
+            system: 
+              type: object
+              properties: 
+                uuid: 
+                  type: string
+                  example: win2k19-std-fr-64
+                name: 
+                  type: string
+                  example: Windows Server 2019 Standard (64 bits)
+            uptime: 
+              type: string
+              example: 14624
+            vm_type: 
+              type: string
+              example: qemu
+            setup_step: 
+              type: string
+              format: nullable
+            netboot_on: 
+              type: string
+              format: nullable
+            netboot_is_setup: 
+              type: string
+              example: 1
+            is_smtp_allowed: 
+              type: string
+              example: 1
+            hostname: 
+              type: string
+              format: nullable
+            is_setup_at: 
+              type: string
+              example: 2020-02-10 13:53:53
+            is_ipv6_enabled: 
+              type: string
+              example: 1
+            is_processing: 
+              type: string
+              example: 0
+            ssh_keys: 
+              type: string
+              format: nullable
+            keyboard: 
+              type: string
+              example: fr
+  CloudServer:
+    properties:
+      success: 
+        type: boolean
+      uuid: 
+        type: string
+        example: 4768103d-7e0b-46c8-8f65-360bcd7b3322
+      name: 
+        type: string
+        example: vs4023.par01fr.vsys.cloud
+      label: 
+        type: string
+        format: nullable
+      offer: 
+        type: object
+        properties: 
+          uuid: 
+            type: string
+            example: vcs-2-win-ryzen
+          category: 
+            type: string
+            example: vcs-win
+          name: 
+            type: string
+            example: vCS-2-WIN
+          price_month: 
+            type: string
+            example: 12.00
+          price_hour: 
+            type: string
+            example: 0.0164
+      start_time: 
+        type: string
+        example: 2020-02-10 13:53:53
+      end_time: 
+        type: string
+        example: 2020-02-10 22:05:01
+      monthly_usage: 
+        type: string
+        example: 0.134243111111080000000000000000
+      short_description: 
+        type: string
+        format: nullable
+      is_suspended: 
+        type: string
+        example: 0
+      suspension_reason: 
+        type: string
+        format: nullable
+      cloud_zone: 
+        type: object
+        properties: 
+          country_code: 
+            type: string
+            example: FR
+          country_name: 
+            type: string
+            example: France
+          city_name: 
+            type: string
+            example: Paris
+          datacenter_name: 
+            type: string
+            example: Iliad DC2
+          timezone: 
+            type: string
+            example: Europe/Paris
+      vcpus: 
+        type: string
+        example: 2
+      vcpus_used: 
+        type: string
+        example: 1
+      memory_size: 
+        type: string
+        example: 4096
+      memory_size_used: 
+        type: string
+        example: 3597
+      root_space: 
+        type: string
+        example: 40
+      root_disk_type: 
+        type: string
+        example: nvme
+      status: 
+        type: string
+        example: running
+      is_error: 
+        type: string
+        example: 0
+      is_setup: 
+        type: string
+        example: 1
+      system: 
+        type: object
+        properties: 
+          uuid: 
+            type: string
+            example: win2k19-std-fr-64
+          name: 
+            type: string
+            example: Windows Server 2019 Standard (64 bits)
+      uptime: 
+        type: string
+        example: 14624
+      vm_type: 
+        type: string
+        example: qemu
+      setup_step: 
+        type: string
+        format: nullable
+      netboot_on: 
+        type: string
+        format: nullable
+      netboot_is_setup: 
+        type: string
+        example: 1
+      is_smtp_allowed: 
+        type: string
+        example: 1
+      hostname: 
+        type: string
+        format: nullable
+      is_setup_at: 
+        type: string
+        example: 2020-02-10 13:53:53
+      is_ipv6_enabled: 
+        type: string
+        example: 1
+      is_processing: 
+        type: string
+        example: 0
+      ssh_keys: 
+        type: string
+        format: nullable
+      keyboard: 
+        type: string
+        example: fr
+  CloudServerAct:
+    properties:
+      success: 
+        type: boolean
+      uuid: 
+        type: string
+        example: UUID
+      messages: 
+        type: array
+        items: 
+          type: object
+          properties: 
+            content: 
+              type: string
+              example: "{ACTION} in progress..."
+            type: 
+              type: string
+              example: notice
+  Success:
+    properties: 
+      success: 
+        type: boolean
+      uuid: 
+        type: string
+        example: UUID
+
+securityDefinitions:
+  ApiKeyAuth:
+    name: X-API-Key
+    type: apiKey
+    description: Your VirtuaCloud API Key (Required).
+    in: header
+security:
+  - ApiKeyAuth: []
+externalDocs:
+  description: Website
+  url: 'https://virtua.cloud'
