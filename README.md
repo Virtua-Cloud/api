@@ -383,6 +383,41 @@ curl -s --header 'Content-Type: application/json' --request POST -H 'Authorizati
 }
 ```
 
+## Rebuild a Cloud Server
+
+```http
+POST /v1/cloud-server/UUID/rebuild
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `API_KEY` | `string` | **Required**. Your API key |
+| `UUID` | `string` | **Required**. Your cloud sever UUID |
+| `system` | `string` | System UUID |
+| `iso_image` | `string` | ISO Image UUID |
+
+### Example
+
+#### Request
+
+```bash
+curl -s --header 'Content-Type: application/json' --request POST -H 'Authorization: Basic API_KEY' 'https://api.virtua.cloud/v1/cloud-server/UUID/rebuild'
+```
+#### Result
+
+```json
+{
+    "success":true,
+    "uuid":"UUID",
+    "messages":[
+        {
+            "content":"Reinstall in progress...",
+            "type":"notice"
+        }
+    ]
+}
+```
+
 ## Destroy a Cloud Server
 
 ```http
