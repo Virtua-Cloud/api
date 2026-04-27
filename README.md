@@ -22,10 +22,12 @@ Log in to the [Virtua.Cloud Manager](https://manager.virtua.cloud), open **Accou
 
 All requests use Bearer authentication and return JSON.
 
+Base URL: `https://api.virtua.cloud/v1`
+
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
      -H "Content-Type: application/json" \
-     https://api.virtua.cloud/account
+     https://api.virtua.cloud/v1/account
 ```
 
 Successful responses include `"success": true`. Error responses include `"success": false`, an `"error"` code, and usually a `"messages"` array.
