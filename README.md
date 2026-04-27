@@ -8,7 +8,7 @@ Deploy and manage your cloud infrastructure programmatically.
 
 The complete, always-up-to-date API reference is available inside the Virtua.Cloud Manager:
 
-**[https://manager.virtua.cloud/api-docs](https://manager.virtua.cloud/api-docs)** *(login required)*
+**[https://manager.virtua.cloud/docs/api](https://manager.virtua.cloud/docs/api)** *(login required)*
 
 You can also manage your API keys at **Account > API Keys** once logged in.
 
