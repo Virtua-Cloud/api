@@ -25,6 +25,10 @@
   ],
   "tags": [
     {
+      "name": "Public catalog",
+      "description": "VPS plans and prices, no key"
+    },
+    {
       "name": "Account",
       "description": "Account informations"
     },
@@ -34,6 +38,65 @@
     }
   ],
   "paths": {
+    "/offers": {
+      "get": {
+        "tags": [
+          "Public catalog"
+        ],
+        "summary": "Public VPS catalog, no authentication",
+        "description": "The plans of the default pricing grid with the per-location offer_id that POST /cloud/order takes. Cache-Control public max-age=300 and a strong ETag; 304 on If-None-Match. HEAD accepted.",
+        "operationId": "getPublicOffers",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "example": "public, max-age=300"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicCatalogResponse"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not Modified"
+          },
+          "503": {
+            "description": "Catalog unavailable, retry later, do not cache",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "catalog_unavailable"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/account": {
       "get": {
         "tags": [
@@ -603,6 +666,187 @@
   },
   "components": {
     "schemas": {
+      "PublicCatalogResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "vat": {
+            "type": "string",
+            "example": "excluded"
+          },
+          "billing": {
+            "type": "object",
+            "properties": {
+              "hourly": {
+                "type": "string"
+              },
+              "period_months": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "example": [
+                  1,
+                  3,
+                  6,
+                  12
+                ]
+              },
+              "term_discount_percent": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "example": {
+                  "3": 5,
+                  "6": 10,
+                  "12": 15
+                }
+              },
+              "ipv6": {
+                "type": "string",
+                "example": "included"
+              }
+            }
+          },
+          "zones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "example": "par01fr"
+                },
+                "city": {
+                  "type": "string",
+                  "example": "Paris"
+                },
+                "country": {
+                  "type": "string",
+                  "example": "FR"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "sold_out"
+                  ]
+                }
+              }
+            }
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicPlan"
+            }
+          }
+        }
+      },
+      "PublicPlan": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "vcs-intel-xeon-vcs-2"
+          },
+          "name": {
+            "type": "string",
+            "example": "vCS-2"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "vcs",
+              "vcs-win"
+            ]
+          },
+          "os_family": {
+            "type": "string",
+            "enum": [
+              "linux",
+              "windows"
+            ]
+          },
+          "cpu_family": {
+            "type": "string",
+            "example": "intel-xeon"
+          },
+          "vcpus": {
+            "type": "integer",
+            "example": 1
+          },
+          "memory_mb": {
+            "type": "integer",
+            "example": 2048
+          },
+          "disk_gb": {
+            "type": "integer",
+            "example": 40
+          },
+          "disk_type": {
+            "type": "string",
+            "example": "ssd"
+          },
+          "bandwidth_mbps": {
+            "type": "integer",
+            "example": 100
+          },
+          "port_mbps": {
+            "type": "integer",
+            "example": 1000
+          },
+          "price_hour": {
+            "type": "string",
+            "example": "0.0167"
+          },
+          "price_month": {
+            "type": "string",
+            "example": "12.00"
+          },
+          "extra_ipv4_max": {
+            "type": "integer",
+            "example": 5
+          },
+          "extra_ipv4_price_hour": {
+            "type": "string",
+            "example": "0.00347000"
+          },
+          "extra_ipv4_price_month": {
+            "type": "string",
+            "example": "2.50"
+          },
+          "ipv6_max_block_size": {
+            "type": "integer",
+            "example": 64
+          },
+          "zones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "example": "par01fr"
+                },
+                "offer_id": {
+                  "type": "string",
+                  "description": "Opaque, up to 255 characters, not a UUID. Pass as offer to POST /cloud/order.",
+                  "example": "vcs-2-intel.par01fr"
+                }
+              }
+            }
+          }
+        }
+      },
       "Account": {
         "type": "object",
         "properties": {
@@ -737,11 +981,11 @@
                 },
                 "start_time": {
                   "type": "string",
-                  "example": "2020-02-10T13:53:53.000Z"
+                  "example": "2020-02-10T13:53:53"
                 },
                 "end_time": {
                   "type": "string",
-                  "example": "2020-02-10T22:05:01.000Z"
+                  "example": "2020-02-10T22:05:01"
                 },
                 "monthly_usage": {
                   "type": "string",
@@ -863,7 +1107,7 @@
                 },
                 "is_setup_at": {
                   "type": "string",
-                  "example": "2020-02-10T13:53:53.000Z"
+                  "example": "2020-02-10T13:53:53"
                 },
                 "is_ipv6_enabled": {
                   "type": "string",
@@ -931,11 +1175,11 @@
           },
           "start_time": {
             "type": "string",
-            "example": "2020-02-10T13:53:53.000Z"
+            "example": "2020-02-10T13:53:53"
           },
           "end_time": {
             "type": "string",
-            "example": "2020-02-10T22:05:01.000Z"
+            "example": "2020-02-10T22:05:01"
           },
           "monthly_usage": {
             "type": "string",
@@ -1057,7 +1301,7 @@
           },
           "is_setup_at": {
             "type": "string",
-            "example": "2020-02-10T13:53:53.000Z"
+            "example": "2020-02-10T13:53:53"
           },
           "is_ipv6_enabled": {
             "type": "string",
